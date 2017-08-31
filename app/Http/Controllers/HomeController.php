@@ -89,7 +89,7 @@ class HomeController extends Controller {
             $response = json_decode($response, true);
 
             $start = 0;
-            if(!empty($response['results'])) {
+            if(!empty($response['results']) && !empty($response['results'][0]['series'])) {
                 $series = $response['results'][0]['series'];
 
                 foreach($series as $k => $v) {
