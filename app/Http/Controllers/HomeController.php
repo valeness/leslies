@@ -12,18 +12,22 @@ use View;
 
 class HomeController extends Controller {
 
+    /**
+     * @return mixed
+     */
     public function index() {
         $prods = Leslies::getProducts();
         Leslies::logAction('pv', ['type' => 'h']);
         return View::make('home')->with(['products' => $prods]);
     }
 
-    public function product($id) {
-        $product = Leslies::getProduct($id);
-        Leslies::logAction('pv', ['type' => 'p', 'id' => $id]);
-        return View::make('product')->with(['product' => $product[0]]);
-    }
-
+    /**
+     *
+     * Searches elastic for products
+     * If none found, then display some suggested prods
+     *
+     * @return mixed
+     */
     public function search() {
         $query = Request::get('query');
         $prods = Leslies::searchProducts($query);
@@ -39,11 +43,33 @@ class HomeController extends Controller {
         return View::make('home')->with(['products' => $prods, 'suggested_prods' => $suggested_prods, 'query' => $query]);
     }
 
+    /**
+     * @param $id
+     *
+     * Do a lookup on elastic for $id and return the product page
+     *
+     * @return mixed
+     */
+    public function product($id) {
+        $product = Leslies::getProduct($id);
+        Leslies::logAction('pv', ['type' => 'p', 'id' => $id]);
+        return View::make('product')->with(['product' => $product[0]]);
+    }
+
+    /**
+     * @return mixed
+     */
     public function analytics() {
 
         return View::make('analytics');
     }
 
+    /**
+     *
+     * Interfaces with influxdb endpoint to get pageview data
+     *
+     * @return array
+     */
     public function analyticsApi() {
         $resource = curl_init();
         curl_setopt($resource, CURLOPT_URL, 'http://localhost:8086/query?epoch=1');
@@ -61,10 +87,6 @@ class HomeController extends Controller {
         ];
         if(!empty($response)) {
             $response = json_decode($response, true);
-
-//            echo '<pre>';
-//            var_dump($response);
-//            exit;
 
             $start = 0;
             if(!empty($response['results'])) {

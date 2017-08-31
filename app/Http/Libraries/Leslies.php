@@ -187,6 +187,15 @@ class Leslies {
         var_dump($response);
     }
 
+    /**
+     * @param string $measurement
+     * @param array $fields
+     * @param int $value
+     *
+     * Logs pageviews (or other actions) to influxDB
+     * $fields relate to tags on influxDB
+     *
+     */
     public static function logAction($measurement = 'pv', $fields = [], $value = 1) {
 
         $data = $measurement;
